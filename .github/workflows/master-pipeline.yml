@@ -1,0 +1,49 @@
+name: mtg-shop-skraper pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+
+  run-tests:
+    uses: gelim92/mtg-shop-skraper/.github/workflows/run-tests.yml@main
+
+  create-tag:
+    needs: run-tests
+    runs-on: ubuntu-latest
+    outputs:
+      new-tag: ${{ steps.bump-and-push-tag.outputs.new_tag }}
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: '0'
+    - name: Bump version and push tag
+      id: bump-and-push-tag
+      uses: anothrNick/github-tag-action@1.36.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        WITH_V: true
+
+  docker-build-and-push:
+    needs: create-tag
+    runs-on: ubuntu-latest
+    steps:
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Build and push
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: gerilm/mtg-shop-skraper:latest,gerilm/mtg-shop-skraper:${{ needs.create-tag.outputs.new-tag }}
+
+  docker-deploy:
+    needs: docker-build-and-push
+    runs-on: ubuntu-latest
+    steps:
+    - name: Trigger Deployment
+      run: |
+        curl -H "Authorization: Bearer ${{ secrets.DEPLOYMENT_TOKEN }}" ${{ secrets.DEPLOYMENT_URL }}

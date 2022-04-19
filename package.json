@@ -25,7 +25,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "prettier --write src/**/*.ts{,x}",
-    "lint": "tsc --noEmit && eslint src/**/*.ts{,x}"
+    "lint": "tsc --noEmit && eslint src/**/*.ts{,x}",
+    "docker:build": "docker image rm gerilm/mtg-shop-skraper &> /dev/null && docker build -t gerilm/mtg-shop-skraper ./",
+    "docker:run": "docker run -d -p 3000:3000 gerilm/mtg-shop-skraper"
   },
   "eslintConfig": {
     "extends": [

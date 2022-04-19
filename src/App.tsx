@@ -9,7 +9,7 @@ const App: FC = () => {
       <AppBar position="relative">
         <Toolbar>
           <PhotoCamera />
-          <Typography variant="h6">Photo Albumzzz</Typography>
+          <Typography variant="h6">Photo Album</Typography>
         </Toolbar>
       </AppBar>
       <div>

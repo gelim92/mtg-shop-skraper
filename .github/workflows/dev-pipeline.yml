@@ -6,4 +6,4 @@ on:
 
 jobs:
   run-tests:
-    uses: gelim92/mtg-shop-skraper/.github/workflows/run-tests.yml@main
+    uses: ./.github/workflows/run-tests.yml
